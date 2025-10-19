@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Checkout = ({ cart, getTotalAmount, clearCart, onSuccess, onCancel }) => {
+  const { user } = useContext(AuthContext);
+  
   const [formData, setFormData] = useState({
     customerEmail: '',
     customerName: '',
@@ -13,6 +16,16 @@ const Checkout = ({ cart, getTotalAmount, clearCart, onSuccess, onCancel }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        customerEmail: user.email,
+        customerName: user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim()
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({
@@ -140,7 +153,10 @@ const Checkout = ({ cart, getTotalAmount, clearCart, onSuccess, onCancel }) => {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
+                  disabled
+                  style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
                 />
+                <small style={{ color: '#6b7280', fontSize: '12px' }}>Using your account email</small>
               </div>
 
               <div className="form-group">

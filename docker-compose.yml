@@ -81,6 +81,26 @@ services:
       timeout: 5s
       retries: 5
 
+  # PostgreSQL Database for User Service
+  postgres-user:
+    image: postgres:15-alpine
+    container_name: postgres-user
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-user-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # RabbitMQ Message Queue
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
@@ -190,6 +210,25 @@ services:
       - ecommerce-network
     restart: on-failure
 
+  # User Service
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/userdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    restart: on-failure
+
   # Frontend Application
   frontend:
     build:
@@ -202,6 +241,7 @@ services:
       - product-service
       - order-service
       - payment-service
+      - user-service
     networks:
       - ecommerce-network
 
@@ -214,4 +254,5 @@ volumes:
   postgres-order-data:
   postgres-payment-data:
   postgres-notification-data:
+  postgres-user-data:
   rabbitmq-data:

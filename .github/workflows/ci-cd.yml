@@ -56,10 +56,20 @@ jobs:
         run: |
           cd notification-service
           mvn clean package -DskipTests
-
+        
       - name: Test Notification Service
         run: |
           cd notification-service
+          mvn test
+
+      - name: Build User Service
+        run: |
+          cd user-service
+          mvn clean package -DskipTests
+        
+      - name: Test User Service
+        run: |
+          cd user-service
           mvn test
 
       - name: Upload Build Artifacts
@@ -71,6 +81,7 @@ jobs:
             order-service/target/*.jar
             payment-service/target/*.jar
             notification-service/target/*.jar
+            user-service/target/*.jar
 
   build-docker-images:
     name: Build Docker Images
@@ -100,6 +111,10 @@ jobs:
         run: |
           docker build -t ecommerce/notification-service:latest ./notification-service
 
+      - name: Build User Service Image
+        run: |
+          docker build -t ecommerce/user-service:latest ./user-service
+
       - name: Build Frontend Image
         run: |
           docker build -t ecommerce/frontend:latest ./frontend
@@ -110,6 +125,7 @@ jobs:
           docker save ecommerce/order-service:latest -o order-service.tar
           docker save ecommerce/payment-service:latest -o payment-service.tar
           docker save ecommerce/notification-service:latest -o notification-service.tar
+          docker save ecommerce/user-service:latest -o user-service.tar
           docker save ecommerce/frontend:latest -o frontend.tar
 
       - name: Upload Docker Images
@@ -121,6 +137,7 @@ jobs:
             order-service.tar
             payment-service.tar
             notification-service.tar
+            user-service.tar
             frontend.tar
 
   deploy-local:
@@ -143,6 +160,7 @@ jobs:
           docker load -i order-service.tar
           docker load -i payment-service.tar
           docker load -i notification-service.tar
+          docker load -i user-service.tar
           docker load -i frontend.tar
 
       - name: Start Services with Docker Compose
@@ -170,9 +188,35 @@ jobs:
         run: |
           curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8084/api/notifications || exit 1
 
+      - name: Health Check - User Service
+        run: |
+          curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8085/api/users || exit 1
+
       - name: Health Check - Frontend
         run: |
           curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:3000 || exit 1
+
+      - name: Test User Registration
+        run: |
+          echo "Testing user registration endpoint..."
+          curl -X POST http://localhost:8085/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"username":"testuser","email":"test@example.com","password":"Test123!","firstName":"Test","lastName":"User"}' \
+            -w "\nHTTP Status: %{http_code}\n" || exit 1
+
+      - name: Test User Login
+        run: |
+          echo "Testing user login endpoint..."
+          RESPONSE=$(curl -s -X POST http://localhost:8085/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"test@example.com","password":"Test123!"}')
+          echo "Login Response: $RESPONSE"
+          if echo "$RESPONSE" | grep -q "token"; then
+            echo "Login successful - token received!"
+          else
+            echo "Login failed - no token in response"
+            exit 1
+          fi
 
       - name: Run Integration Tests
         run: |

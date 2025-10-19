@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './components/Login';
+import Register from './components/Register';
+import AdminDashboard from './components/AdminDashboard';
+import Navbar from './components/Navbar';
 import Products from './components/Products';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
@@ -9,7 +16,6 @@ function App() {
   const [cart, setCart] = useState([]);
   const [notification, setNotification] = useState(null);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -17,7 +23,6 @@ function App() {
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
@@ -47,9 +52,7 @@ function App() {
       removeFromCart(productId);
     } else {
       setCart(cart.map(item =>
-        item.id === productId
-          ? { ...item, quantity }
-          : item
+        item.id === productId ? { ...item, quantity } : item
       ));
     }
   };
@@ -75,66 +78,21 @@ function App() {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  return (
-    <div className="App">
-      {/* Notification Toast */}
-      {notification && (
-        <div className={`notification notification-${notification.type}`}>
-          {notification.message}
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="header">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <span className="logo-icon">🛍️</span>
-              <div className="logo-text">
-                <h1>TechStore</h1>
-                <p className="tagline">Your Modern E-Commerce Platform</p>
-              </div>
-            </div>
-            <div className="nav">
-              <button
-                className={`nav-btn ${currentView === 'products' ? 'active' : ''}`}
-                onClick={() => setCurrentView('products')}
-              >
-                <span className="nav-icon">🏠</span>
-                <span>Shop</span>
-              </button>
-              <button
-                className={`nav-btn ${currentView === 'cart' ? 'active' : ''}`}
-                onClick={() => setCurrentView('cart')}
-              >
-                <span className="nav-icon">🛒</span>
-                <span>Cart</span>
-                {cart.length > 0 && (
-                  <span className="badge">{getTotalItems()}</span>
-                )}
-              </button>
-              <button
-                className={`nav-btn ${currentView === 'checkout' ? 'active' : ''}`}
-                onClick={() => setCurrentView('checkout')}
-                disabled={cart.length === 0}
-              >
-                <span className="nav-icon">💳</span>
-                <span>Checkout</span>
-              </button>
-              <button
-                className={`nav-btn ${currentView === 'orders' ? 'active' : ''}`}
-                onClick={() => setCurrentView('orders')}
-              >
-                <span className="nav-icon">📦</span>
-                <span>Orders</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
+  const MainContent = () => {
+    return (
       <div className="main-content">
+        <Navbar 
+          cartCount={getTotalItems()} 
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
+        
+        {notification && (
+          <div className={`notification notification-${notification.type}`}>
+            {notification.message}
+          </div>
+        )}
+
         <div className="container">
           {currentView === 'products' && (
             <Products addToCart={addToCart} cart={cart} />
@@ -144,9 +102,9 @@ function App() {
               cart={cart}
               updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}
+              clearCart={clearCart}
               getTotalAmount={getTotalAmount}
-              onCheckout={() => setCurrentView('checkout')}
-              onContinueShopping={() => setCurrentView('products')}
+              setCurrentView={setCurrentView}
             />
           )}
           {currentView === 'checkout' && (
@@ -154,27 +112,46 @@ function App() {
               cart={cart}
               getTotalAmount={getTotalAmount}
               clearCart={clearCart}
-              onSuccess={() => {
-                setCurrentView('orders');
-                clearCart();
-              }}
-              onCancel={() => setCurrentView('cart')}
+              setCurrentView={setCurrentView}
+              showNotification={showNotification}
             />
           )}
           {currentView === 'orders' && (
-            <Orders />
+            <Orders showNotification={showNotification} />
           )}
         </div>
       </div>
+    );
+  };
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <p>© 2024 TechStore - Microservices E-Commerce Platform</p>
-          <p className="footer-tech">Built with React, Spring Boot & RabbitMQ</p>
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="App">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route 
+              path="/" 
+              element={
+                <ProtectedRoute>
+                  <MainContent />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/*" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
         </div>
-      </footer>
-    </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

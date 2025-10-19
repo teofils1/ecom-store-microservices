@@ -72,7 +72,7 @@ const Products = ({ addToCart, cart }) => {
   };
 
   const isInCart = (productId) => {
-    return cart.find(item => item.id === productId);
+    return cart && cart.find(item => item.id === productId);
   };
 
   const getProductIcon = (category) => {

@@ -1,40 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searched, setSearched] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user && user.email) {
+      fetchOrders();
+    }
+  }, [user]);
 
   const fetchOrders = async () => {
-    if (!email) {
-      setError('Please enter your email address');
+    if (!user || !user.email) {
+      setError('User not logged in');
+      setLoading(false);
       return;
     }
 
     setLoading(true);
     setError(null);
-    setSearched(true);
 
     try {
-      const response = await axios.get(`http://localhost:8082/api/orders/customer/${email}`);
+      const response = await axios.get(`http://localhost:8082/api/orders/customer/${user.email}`);
       setOrders(response.data);
       if (response.data.length === 0) {
-        setError('No orders found for this email address.');
+        setError('No orders found. Start shopping to create your first order!');
       }
     } catch (err) {
       setError('Failed to load orders. Please try again.');
       setOrders([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      fetchOrders();
     }
   };
 
@@ -68,57 +68,10 @@ const Orders = () => {
   return (
     <div className="order-list">
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h2 style={{ fontSize: '2.5rem', color: '#1f2937', marginBottom: '10px' }}>Order History</h2>
-        <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>Track and view your orders</p>
-      </div>
-
-      {/* Search Section */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '30px',
-        borderRadius: '15px',
-        marginBottom: '40px',
-        color: 'white'
-      }}>
-        <label style={{ display: 'block', marginBottom: '15px', fontSize: '1.1rem', fontWeight: '600' }}>
-          🔍 Enter your email to view orders:
-        </label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="your@email.com"
-            style={{
-              flex: 1,
-              padding: '14px 20px',
-              border: '2px solid rgba(255,255,255,0.3)',
-              borderRadius: '25px',
-              fontSize: '16px',
-              background: 'rgba(255,255,255,0.9)',
-              color: '#1f2937'
-            }}
-          />
-          <button
-            onClick={fetchOrders}
-            disabled={loading}
-            style={{
-              padding: '14px 32px',
-              background: 'white',
-              color: '#667eea',
-              border: 'none',
-              borderRadius: '25px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s',
-              opacity: loading ? 0.7 : 1
-            }}
-          >
-            {loading ? '🔄 Searching...' : '🔎 Search Orders'}
-          </button>
-        </div>
+        <h2 style={{ fontSize: '2.5rem', color: '#1f2937', marginBottom: '10px' }}>My Orders</h2>
+        <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
+          Viewing orders for: <strong>{user?.email}</strong>
+        </p>
       </div>
 
       {/* Loading State */}
@@ -134,27 +87,29 @@ const Orders = () => {
         <div className="error">
           <span className="error-icon">⚠️</span>
           <p>{error}</p>
+          <button 
+            onClick={fetchOrders}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              background: '#667eea',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
         </div>
       )}
 
       {/* Empty State */}
-      {!loading && !error && orders.length === 0 && searched && (
+      {!loading && !error && orders.length === 0 && (
         <div className="empty-state">
           <span className="empty-icon">📦</span>
-          <h3>No Orders Found</h3>
-          <p>We couldn't find any orders associated with this email address.</p>
-          <p style={{ fontSize: '14px', color: '#9ca3af', marginTop: '10px' }}>
-            Make sure you're using the email address you used during checkout.
-          </p>
-        </div>
-      )}
-
-      {/* Initial State */}
-      {!loading && !error && orders.length === 0 && !searched && (
-        <div className="empty-state">
-          <span className="empty-icon">🛍️</span>
-          <h3>Track Your Orders</h3>
-          <p>Enter your email address above to view your order history</p>
+          <h3>No Orders Yet</h3>
+          <p>You haven't placed any orders yet. Start shopping to create your first order!</p>
         </div>
       )}
 
