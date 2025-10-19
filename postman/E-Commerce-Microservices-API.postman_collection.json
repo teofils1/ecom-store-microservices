@@ -1,0 +1,504 @@
+{
+  "info": {
+    "name": "E-Commerce Microservices API Collection",
+    "description": "Comprehensive API collection for testing all microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "product_service_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "order_service_url",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "payment_service_url",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "notification_service_url",
+      "value": "http://localhost:8084"
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "payment_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Product Service",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{product_service_url}}/api/products",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{product_service_url}}/api/products/{{product_id}}",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "{{product_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{product_service_url}}/api/products/category/Electronics",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "category", "Electronics"]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{product_service_url}}/api/products/search?keyword=laptop",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "search"],
+              "query": [{"key": "keyword", "value": "laptop"}]
+            }
+          }
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('product_id', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laptop Pro 15\",\n  \"description\": \"High-performance laptop for professionals\",\n  \"price\": 1299.99,\n  \"category\": \"Electronics\",\n  \"stockQuantity\": 50,\n  \"imageUrl\": \"https://example.com/laptop.jpg\",\n  \"available\": true\n}"
+            },
+            "url": {
+              "raw": "{{product_service_url}}/api/products",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laptop Pro 15 Updated\",\n  \"description\": \"Updated description\",\n  \"price\": 1199.99,\n  \"category\": \"Electronics\",\n  \"stockQuantity\": 45,\n  \"imageUrl\": \"https://example.com/laptop.jpg\",\n  \"available\": true\n}"
+            },
+            "url": {
+              "raw": "{{product_service_url}}/api/products/{{product_id}}",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "{{product_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5\n}"
+            },
+            "url": {
+              "raw": "{{product_service_url}}/api/products/{{product_id}}/stock",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "{{product_id}}", "stock"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{product_service_url}}/api/products/{{product_id}}",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products", "{{product_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/api/orders",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/api/orders/{{order_id}}",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Orders by Customer Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/api/orders/customer/john.doe@example.com",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders", "customer", "john.doe@example.com"]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('order_id', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerEmail\": \"john.doe@example.com\",\n  \"customerName\": \"John Doe\",\n  \"shippingAddress\": \"123 Main St, New York, NY 10001\",\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"productName\": \"Laptop Pro 15\",\n      \"quantity\": 1,\n      \"price\": 1299.99\n    },\n    {\n      \"productId\": 2,\n      \"productName\": \"Wireless Mouse\",\n      \"quantity\": 2,\n      \"price\": 29.99\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/api/orders",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SHIPPED\"\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/api/orders/{{order_id}}/status",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Service",
+      "item": [
+        {
+          "name": "Get All Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/{{payment_id}}",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "{{payment_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment by Order ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/order/{{order_id}}",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "order", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Process Payment - Credit Card",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('payment_id', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"amount\": 1359.97,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"paymentDetails\": \"1234567890123456\"\n}"
+            },
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/process",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "process"]
+            }
+          }
+        },
+        {
+          "name": "Process Payment - PayPal",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"amount\": 1359.97,\n  \"paymentMethod\": \"PAYPAL\",\n  \"paymentDetails\": \"user@paypal.com\"\n}"
+            },
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/process",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "process"]
+            }
+          }
+        },
+        {
+          "name": "Process Payment - Bank Transfer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"amount\": 1359.97,\n  \"paymentMethod\": \"BANK_TRANSFER\",\n  \"paymentDetails\": \"12345678901234\"\n}"
+            },
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/process",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "process"]
+            }
+          }
+        },
+        {
+          "name": "Process Payment - Cash on Delivery",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"amount\": 1359.97,\n  \"paymentMethod\": \"CASH_ON_DELIVERY\",\n  \"paymentDetails\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/process",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "process"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification Service",
+      "item": [
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notification_service_url}}/api/notifications",
+              "host": ["{{notification_service_url}}"],
+              "path": ["api", "notifications"]
+            }
+          }
+        },
+        {
+          "name": "Get Notification by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notification_service_url}}/api/notifications/1",
+              "host": ["{{notification_service_url}}"],
+              "path": ["api", "notifications", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Notifications by Order ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notification_service_url}}/api/notifications/order/{{order_id}}",
+              "host": ["{{notification_service_url}}"],
+              "path": ["api", "notifications", "order", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Notifications by Customer Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notification_service_url}}/api/notifications/customer/john.doe@example.com",
+              "host": ["{{notification_service_url}}"],
+              "path": ["api", "notifications", "customer", "john.doe@example.com"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Complete Order Flow",
+      "item": [
+        {
+          "name": "1. Create Products",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Smartphone XYZ\",\n  \"description\": \"Latest smartphone with amazing features\",\n  \"price\": 699.99,\n  \"category\": \"Electronics\",\n  \"stockQuantity\": 100,\n  \"imageUrl\": \"https://example.com/phone.jpg\",\n  \"available\": true\n}"
+            },
+            "url": {
+              "raw": "{{product_service_url}}/api/products",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "2. Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerEmail\": \"test@example.com\",\n  \"customerName\": \"Test User\",\n  \"shippingAddress\": \"456 Test Ave, Test City, TC 12345\",\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"productName\": \"Smartphone XYZ\",\n      \"quantity\": 1,\n      \"price\": 699.99\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/api/orders",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "3. Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"amount\": 699.99,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"paymentDetails\": \"4532123456789012\"\n}"
+            },
+            "url": {
+              "raw": "{{payment_service_url}}/api/payments/process",
+              "host": ["{{payment_service_url}}"],
+              "path": ["api", "payments", "process"]
+            }
+          }
+        },
+        {
+          "name": "4. Update Order Status to Shipped",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SHIPPED\"\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/api/orders/1/status",
+              "host": ["{{order_service_url}}"],
+              "path": ["api", "orders", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "5. View Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notification_service_url}}/api/notifications/order/1",
+              "host": ["{{notification_service_url}}"],
+              "path": ["api", "notifications", "order", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
