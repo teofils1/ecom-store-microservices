@@ -147,7 +147,7 @@ jobs:
 
       - name: Start Services with Docker Compose
         run: |
-          docker-compose up -d
+          docker compose up -d
 
       - name: Wait for Services to Start
         run: |
@@ -177,14 +177,14 @@ jobs:
       - name: Run Integration Tests
         run: |
           echo "All services are healthy and running!"
-          docker-compose ps
+          docker compose ps
 
       - name: Show Service Logs
         if: failure()
         run: |
-          docker-compose logs
+          docker compose logs
 
       - name: Stop Services
         if: always()
         run: |
-          docker-compose down -v
+          docker compose down -v
