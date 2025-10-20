@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
 import './Auth.css';
 
 const Login = () => {
@@ -44,11 +45,15 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h2>Login</h2>
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message">
+            <FiAlertCircle size={18} /> {error}
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label><FiMail size={16} /> Email</label>
             <input
               type="email"
               name="email"
@@ -60,7 +65,7 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label><FiLock size={16} /> Password</label>
             <input
               type="password"
               name="password"

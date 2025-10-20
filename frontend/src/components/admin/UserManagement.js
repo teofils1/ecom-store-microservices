@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosConfig';
+import { FiSearch, FiUsers, FiTrash2 } from 'react-icons/fi';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -59,11 +60,12 @@ const UserManagement = () => {
   return (
     <div className="user-management">
       <div className="page-header">
-        <h1>User Management</h1>
+        <h1><FiUsers size={32} /> User Management</h1>
         <p>Total Users: {users.length}</p>
       </div>
 
       <div className="search-bar">
+        <FiSearch className="search-icon" size={20} />
         <input
           type="text"
           placeholder="Search users by name, username, or email..."
@@ -118,8 +120,9 @@ const UserManagement = () => {
                     onClick={() => handleDeleteUser(user.id)}
                     className="btn-danger btn-sm"
                     disabled={!user.enabled}
+                    aria-label="Disable user"
                   >
-                    Disable
+                    <FiTrash2 size={16} /> Disable
                   </button>
                 </td>
               </tr>

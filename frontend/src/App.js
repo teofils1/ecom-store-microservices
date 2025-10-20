@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, AuthContext } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -11,21 +11,40 @@ import Cart from './components/Cart';
 import Checkout from './components/Checkout';
 import Orders from './components/Orders';
 
-function App() {
+// Main content component that has access to AuthContext
+function MainApp() {
+  const { user } = useContext(AuthContext);
   const [currentView, setCurrentView] = useState('products');
   const [cart, setCart] = useState([]);
   const [notification, setNotification] = useState(null);
 
+  // Load cart from localStorage when user changes
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    if (user) {
+      const cartKey = `cart_${user.id || user.sub}`;
+      const savedCart = localStorage.getItem(cartKey);
+      if (savedCart) {
+        try {
+          setCart(JSON.parse(savedCart));
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          setCart([]);
+        }
+      } else {
+        setCart([]);
+      }
+    } else {
+      setCart([]);
     }
-  }, []);
+  }, [user]);
 
+  // Save cart to localStorage when cart changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    if (user) {
+      const cartKey = `cart_${user.id || user.sub}`;
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+    }
+  }, [cart, user]);
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -78,6 +97,23 @@ function App() {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      showNotification('Your cart is empty!', 'error');
+      return;
+    }
+    setCurrentView('checkout');
+  };
+
+  const handleCheckoutSuccess = () => {
+    setCurrentView('orders');
+    showNotification('Order placed successfully!', 'success');
+  };
+
+  const handleCheckoutCancel = () => {
+    setCurrentView('cart');
+  };
+
   const MainContent = () => {
     return (
       <div className="main-content">
@@ -102,9 +138,9 @@ function App() {
               cart={cart}
               updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}
-              clearCart={clearCart}
               getTotalAmount={getTotalAmount}
-              setCurrentView={setCurrentView}
+              onCheckout={handleCheckout}
+              onContinueShopping={() => setCurrentView('products')}
             />
           )}
           {currentView === 'checkout' && (
@@ -112,12 +148,12 @@ function App() {
               cart={cart}
               getTotalAmount={getTotalAmount}
               clearCart={clearCart}
-              setCurrentView={setCurrentView}
-              showNotification={showNotification}
+              onSuccess={handleCheckoutSuccess}
+              onCancel={handleCheckoutCancel}
             />
           )}
           {currentView === 'orders' && (
-            <Orders showNotification={showNotification} />
+            <Orders />
           )}
         </div>
       </div>
@@ -125,32 +161,38 @@ function App() {
   };
 
   return (
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <MainContent />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/*" 
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="App">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <MainContent />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/*" 
-              element={
-                <ProtectedRoute adminOnly>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
+      <MainApp />
     </AuthProvider>
   );
 }

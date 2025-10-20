@@ -1,4 +1,14 @@
 import React from 'react';
+import { 
+  FiShoppingCart, 
+  FiPackage, 
+  FiTrash2, 
+  FiArrowLeft, 
+  FiArrowRight, 
+  FiLock, 
+  FiCheck,
+  FiGift
+} from 'react-icons/fi';
 
 const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout, onContinueShopping }) => {
   const getTotalItems = () => {
@@ -24,7 +34,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
   if (cart.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-cart-icon">🛒</div>
+        <FiShoppingCart className="empty-cart-icon" size={64} />
         <h2>Your cart is empty</h2>
         <p>Looks like you haven't added anything yet!</p>
         <button onClick={onContinueShopping} className="btn-primary">
@@ -49,7 +59,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
           {cart.map(item => (
             <div key={item.id} className="cart-item-card">
               <div className="cart-item-image">
-                <span className="item-icon">📦</span>
+                <FiPackage className="item-icon" size={40} />
               </div>
 
               <div className="cart-item-details">
@@ -87,7 +97,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
                   onClick={() => removeFromCart(item.id)}
                   aria-label="Remove item"
                 >
-                  <span className="remove-icon">🗑️</span>
+                  <FiTrash2 className="remove-icon" size={18} />
                   Remove
                 </button>
               </div>
@@ -95,7 +105,7 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
           ))}
 
           <button onClick={onContinueShopping} className="continue-shopping-btn">
-            ← Continue Shopping
+            <FiArrowLeft size={18} /> Continue Shopping
           </button>
         </div>
 
@@ -123,13 +133,13 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
 
             {getTotalAmount() > 100 && (
               <div className="free-shipping-notice">
-                🎉 You've qualified for free shipping!
+                <FiCheck size={18} /> You've qualified for free shipping!
               </div>
             )}
 
             {getTotalAmount() <= 100 && (
               <div className="shipping-notice">
-                💡 Add ${(100 - getTotalAmount()).toFixed(2)} more for free shipping
+                <FiGift size={18} /> Add ${(100 - getTotalAmount()).toFixed(2)} more for free shipping
               </div>
             )}
 
@@ -142,13 +152,8 @@ const Cart = ({ cart, updateQuantity, removeFromCart, getTotalAmount, onCheckout
 
             <button className="checkout-btn" onClick={onCheckout}>
               Proceed to Checkout
-              <span className="btn-arrow">→</span>
+              <FiArrowRight className="btn-arrow" size={18} />
             </button>
-
-            <div className="security-badges">
-              <span className="badge">🔒 Secure Checkout</span>
-              <span className="badge">✓ Money Back Guarantee</span>
-            </div>
           </div>
 
           {/* Promo Code Section */}

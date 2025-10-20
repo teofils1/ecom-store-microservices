@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FiUser, FiMail, FiLock, FiPhone, FiAlertCircle } from 'react-icons/fi';
 import './Auth.css';
 
 const Register = () => {
@@ -56,12 +57,16 @@ const Register = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h2>Register</h2>
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message">
+            <FiAlertCircle size={18} /> {error}
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label>First Name</label>
+              <label><FiUser size={16} /> First Name</label>
               <input
                 type="text"
                 name="firstName"
@@ -73,7 +78,7 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label>Last Name</label>
+              <label><FiUser size={16} /> Last Name</label>
               <input
                 type="text"
                 name="lastName"
@@ -86,7 +91,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label>Username</label>
+            <label><FiUser size={16} /> Username</label>
             <input
               type="text"
               name="username"
@@ -99,7 +104,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label><FiMail size={16} /> Email</label>
             <input
               type="email"
               name="email"
@@ -111,7 +116,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label>Phone (Optional)</label>
+            <label><FiPhone size={16} /> Phone (Optional)</label>
             <input
               type="tel"
               name="phone"
@@ -123,7 +128,7 @@ const Register = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Password</label>
+              <label><FiLock size={16} /> Password</label>
               <input
                 type="password"
                 name="password"
@@ -136,7 +141,7 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label>Confirm Password</label>
+              <label><FiLock size={16} /> Confirm Password</label>
               <input
                 type="password"
                 name="confirmPassword"

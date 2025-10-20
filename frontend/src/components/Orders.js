@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { 
+  FiPackage, 
+  FiCheckCircle, 
+  FiClock, 
+  FiTruck, 
+  FiAlertCircle, 
+  FiBox,
+  FiCalendar,
+  FiCreditCard,
+  FiXCircle
+} from 'react-icons/fi';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -39,25 +50,25 @@ const Orders = () => {
   };
 
   const getStatusIcon = (status) => {
-    const icons = {
-      'PENDING': '⏳',
-      'CONFIRMED': '✓',
-      'PAID': '💳',
-      'SHIPPED': '📦',
-      'DELIVERED': '✅',
-      'CANCELLED': '❌'
+    const iconMap = {
+      'PENDING': <FiClock size={18} />,
+      'CONFIRMED': <FiCheckCircle size={18} />,
+      'PAID': <FiCreditCard size={18} />,
+      'SHIPPED': <FiTruck size={18} />,
+      'DELIVERED': <FiCheckCircle size={18} />,
+      'CANCELLED': <FiXCircle size={18} />
     };
-    return icons[status] || '📋';
+    return iconMap[status] || <FiPackage size={18} />;
   };
 
   const getPaymentMethodIcon = (method) => {
-    const icons = {
-      'CREDIT_CARD': '💳',
-      'PAYPAL': '🅿️',
-      'BANK_TRANSFER': '🏦',
-      'CASH_ON_DELIVERY': '💵'
+    const iconMap = {
+      'CREDIT_CARD': <FiCreditCard size={24} />,
+      'PAYPAL': <FiCreditCard size={24} />,
+      'BANK_TRANSFER': <FiCreditCard size={24} />,
+      'CASH_ON_DELIVERY': <FiPackage size={24} />
     };
-    return icons[method] || '💳';
+    return iconMap[method] || <FiCreditCard size={24} />;
   };
 
   const formatDate = (dateString) => {
@@ -85,7 +96,7 @@ const Orders = () => {
       {/* Error State */}
       {error && !loading && (
         <div className="error">
-          <span className="error-icon">⚠️</span>
+          <FiAlertCircle className="error-icon" size={48} />
           <p>{error}</p>
           <button 
             onClick={fetchOrders}
@@ -107,7 +118,7 @@ const Orders = () => {
       {/* Empty State */}
       {!loading && !error && orders.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">📦</span>
+          <FiPackage className="empty-icon" size={64} />
           <h3>No Orders Yet</h3>
           <p>You haven't placed any orders yet. Start shopping to create your first order!</p>
         </div>
@@ -140,8 +151,8 @@ const Orders = () => {
                       {getStatusIcon(order.status)} {order.status}
                     </span>
                   </div>
-                  <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
-                    📅 Placed on: {formatDate(order.createdAt)}
+                  <p style={{ color: '#6b7280', fontSize: '14px', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <FiCalendar size={14} /> Placed on: {formatDate(order.createdAt)}
                   </p>
                 </div>
               </div>
@@ -180,7 +191,7 @@ const Orders = () => {
                     Payment Method
                   </h4>
                   <p style={{ margin: '4px 0', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{getPaymentMethodIcon(order.paymentMethod)}</span>
+                    {getPaymentMethodIcon(order.paymentMethod)}
                     <span>{order.paymentMethod.replace('_', ' ')}</span>
                   </p>
                 </div>
@@ -188,8 +199,8 @@ const Orders = () => {
 
               {/* Order Items */}
               <div>
-                <h4 style={{ fontSize: '1.1rem', color: '#1f2937', marginBottom: '15px' }}>
-                  📦 Order Items
+                <h4 style={{ fontSize: '1.1rem', color: '#1f2937', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FiBox size={20} /> Order Items
                 </h4>
                 <div style={{ border: '2px solid #e5e7eb', borderRadius: '10px', overflow: 'hidden' }}>
                   {order.items.map((item, index) => (

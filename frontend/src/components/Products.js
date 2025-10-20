@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  FiSearch, 
+  FiX, 
+  FiGrid, 
+  FiList, 
+  FiShoppingCart, 
+  FiCheck, 
+  FiAlertCircle, 
+  FiPackage,
+  FiMonitor,
+  FiHeadphones,
+  FiHardDrive,
+  FiZap,
+  FiBox
+} from 'react-icons/fi';
 
 const Products = ({ addToCart, cart }) => {
   const [products, setProducts] = useState([]);
@@ -76,15 +91,15 @@ const Products = ({ addToCart, cart }) => {
   };
 
   const getProductIcon = (category) => {
-    const icons = {
-      'Electronics': '💻',
-      'Accessories': '🎧',
-      'Peripherals': '⌨️',
-      'Storage': '💾',
-      'Lighting': '💡',
-      'Default': '📦'
+    const iconMap = {
+      'Electronics': <FiMonitor className="category-icon" />,
+      'Accessories': <FiHeadphones className="category-icon" />,
+      'Peripherals': <FiMonitor className="category-icon" />,
+      'Storage': <FiHardDrive className="category-icon" />,
+      'Lighting': <FiZap className="category-icon" />,
+      'Default': <FiBox className="category-icon" />
     };
-    return icons[category] || icons['Default'];
+    return iconMap[category] || iconMap['Default'];
   };
 
   if (loading) {
@@ -99,7 +114,7 @@ const Products = ({ addToCart, cart }) => {
   if (error) {
     return (
       <div className="error">
-        <span className="error-icon">⚠️</span>
+        <FiAlertCircle className="error-icon" size={48} />
         <p>{error}</p>
         <button onClick={fetchProducts} className="btn-primary">Try Again</button>
       </div>
@@ -109,7 +124,7 @@ const Products = ({ addToCart, cart }) => {
   if (products.length === 0) {
     return (
       <div className="empty-state">
-        <span className="empty-icon">📦</span>
+        <FiPackage className="empty-icon" size={64} />
         <h2>No products available</h2>
         <p>Check back later for new products!</p>
       </div>
@@ -127,7 +142,7 @@ const Products = ({ addToCart, cart }) => {
       {/* Filters and Search */}
       <div className="filters-section">
         <div className="search-box">
-          <span className="search-icon">🔍</span>
+          <FiSearch className="search-icon" size={20} />
           <input
             type="text"
             placeholder="Search products..."
@@ -139,8 +154,9 @@ const Products = ({ addToCart, cart }) => {
             <button
               className="clear-search"
               onClick={() => setSearchTerm('')}
+              aria-label="Clear search"
             >
-              ✕
+              <FiX size={18} />
             </button>
           )}
         </div>
@@ -178,15 +194,17 @@ const Products = ({ addToCart, cart }) => {
               className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
               title="Grid View"
+              aria-label="Grid View"
             >
-              ▦
+              <FiGrid size={20} />
             </button>
             <button
               className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => setViewMode('list')}
               title="List View"
+              aria-label="List View"
             >
-              ☰
+              <FiList size={20} />
             </button>
           </div>
         </div>
@@ -203,7 +221,7 @@ const Products = ({ addToCart, cart }) => {
       {/* Products Grid/List */}
       {filteredProducts.length === 0 ? (
         <div className="no-results">
-          <span className="no-results-icon">🔍</span>
+          <FiSearch className="no-results-icon" size={48} />
           <h3>No products found</h3>
           <p>Try adjusting your search or filters</p>
           <button
@@ -226,7 +244,7 @@ const Products = ({ addToCart, cart }) => {
               <div key={product.id} className={`product-card ${!isAvailable ? 'out-of-stock' : ''}`}>
                 <div className="product-image">
                   <span className="product-icon">{getProductIcon(product.category)}</span>
-                  {inCart && <div className="in-cart-badge">In Cart ✓</div>}
+                  {inCart && <div className="in-cart-badge"><FiCheck size={16} /> In Cart</div>}
                   {!isAvailable && <div className="out-of-stock-overlay">Out of Stock</div>}
                 </div>
 
@@ -241,11 +259,11 @@ const Products = ({ addToCart, cart }) => {
                     <div className="stock-info">
                       {isAvailable ? (
                         <>
-                          <span className="stock-badge available">✓ In Stock</span>
+                          <span className="stock-badge available"><FiCheck size={14} /> In Stock</span>
                           <span className="stock-quantity">{product.stockQuantity} units</span>
                         </>
                       ) : (
-                        <span className="stock-badge unavailable">Out of Stock</span>
+                        <span className="stock-badge unavailable"><FiAlertCircle size={14} /> Out of Stock</span>
                       )}
                     </div>
                   </div>
@@ -260,12 +278,13 @@ const Products = ({ addToCart, cart }) => {
                     onClick={() => addToCart(product)}
                     disabled={!isAvailable}
                     className={`add-to-cart-btn ${inCart ? 'in-cart' : ''}`}
+                    aria-label={isAvailable ? (inCart ? 'Add more to cart' : 'Add to cart') : 'Product unavailable'}
                   >
                     {isAvailable ? (
                       inCart ? (
-                        <>Add More <span className="btn-icon">+</span></>
+                        <>Add More <FiShoppingCart className="btn-icon" size={18} /></>
                       ) : (
-                        <>Add to Cart <span className="btn-icon">🛒</span></>
+                        <>Add to Cart <FiShoppingCart className="btn-icon" size={18} /></>
                       )
                     ) : (
                       'Unavailable'

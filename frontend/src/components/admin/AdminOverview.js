@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance, { orderServiceAxios } from '../../utils/axiosConfig';
+import { 
+  FiUsers, 
+  FiShoppingBag, 
+  FiDollarSign, 
+  FiClock, 
+  FiCheckCircle, 
+  FiKey, 
+  FiPackage,
+  FiShoppingCart
+} from 'react-icons/fi';
 
 const AdminOverview = () => {
   const [stats, setStats] = useState({
@@ -55,7 +65,7 @@ const AdminOverview = () => {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">👥</div>
+          <div className="stat-icon"><FiUsers size={32} /></div>
           <div className="stat-details">
             <h3>Total Users</h3>
             <p className="stat-number">{stats.totalUsers}</p>
@@ -63,7 +73,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🛍️</div>
+          <div className="stat-icon"><FiShoppingCart size={32} /></div>
           <div className="stat-details">
             <h3>Customers</h3>
             <p className="stat-number">{stats.totalCustomers}</p>
@@ -71,7 +81,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon"><FiPackage size={32} /></div>
           <div className="stat-details">
             <h3>Total Orders</h3>
             <p className="stat-number">{orderStats.totalOrders}</p>
@@ -79,7 +89,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon"><FiDollarSign size={32} /></div>
           <div className="stat-details">
             <h3>Revenue</h3>
             <p className="stat-number">${orderStats.totalRevenue.toFixed(2)}</p>
@@ -87,7 +97,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">⏳</div>
+          <div className="stat-icon"><FiClock size={32} /></div>
           <div className="stat-details">
             <h3>Pending Orders</h3>
             <p className="stat-number">{orderStats.pendingOrders}</p>
@@ -95,7 +105,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">✅</div>
+          <div className="stat-icon"><FiCheckCircle size={32} /></div>
           <div className="stat-details">
             <h3>Completed Orders</h3>
             <p className="stat-number">{orderStats.completedOrders}</p>
@@ -103,7 +113,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🔑</div>
+          <div className="stat-icon"><FiKey size={32} /></div>
           <div className="stat-details">
             <h3>Admins</h3>
             <p className="stat-number">{stats.totalAdmins}</p>
@@ -111,7 +121,7 @@ const AdminOverview = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🏪</div>
+          <div className="stat-icon"><FiShoppingBag size={32} /></div>
           <div className="stat-details">
             <h3>Vendors</h3>
             <p className="stat-number">{stats.totalVendors}</p>

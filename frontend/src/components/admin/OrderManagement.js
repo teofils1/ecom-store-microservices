@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { orderServiceAxios } from '../../utils/axiosConfig';
+import { FiPackage, FiFilter } from 'react-icons/fi';
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -44,12 +45,12 @@ const OrderManagement = () => {
   return (
     <div className="order-management">
       <div className="page-header">
-        <h1>Order Management</h1>
+        <h1><FiPackage size={32} /> Order Management</h1>
         <p>Total Orders: {orders.length}</p>
       </div>
 
       <div className="filter-bar">
-        <label>Filter by Status:</label>
+        <label><FiFilter size={18} /> Filter by Status:</label>
         <select 
           value={filterStatus} 
           onChange={(e) => setFilterStatus(e.target.value)}

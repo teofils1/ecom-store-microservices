@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { FiPieChart, FiUsers, FiPackage, FiHome, FiLogOut } from 'react-icons/fi';
 
 const AdminSidebar = () => {
   const location = useLocation();
@@ -24,7 +25,7 @@ const AdminSidebar = () => {
           to="/admin" 
           className={isActive('/admin') ? 'nav-item active' : 'nav-item'}
         >
-          <span className="icon">📊</span>
+          <FiPieChart className="icon" size={20} />
           Dashboard
         </Link>
         
@@ -32,7 +33,7 @@ const AdminSidebar = () => {
           to="/admin/users" 
           className={isActive('/admin/users') ? 'nav-item active' : 'nav-item'}
         >
-          <span className="icon">👥</span>
+          <FiUsers className="icon" size={20} />
           Users
         </Link>
         
@@ -40,17 +41,17 @@ const AdminSidebar = () => {
           to="/admin/orders" 
           className={isActive('/admin/orders') ? 'nav-item active' : 'nav-item'}
         >
-          <span className="icon">📦</span>
+          <FiPackage className="icon" size={20} />
           Orders
         </Link>
 
         <Link to="/" className="nav-item">
-          <span className="icon">🏪</span>
+          <FiHome className="icon" size={20} />
           Back to Store
         </Link>
 
         <button onClick={logout} className="nav-item logout-btn">
-          <span className="icon">🚪</span>
+          <FiLogOut className="icon" size={20} />
           Logout
         </button>
       </nav>
