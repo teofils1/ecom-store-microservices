@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { FiPieChart, FiUsers, FiPackage, FiHome, FiLogOut } from 'react-icons/fi';
+import { FiPieChart, FiUsers, FiPackage, FiHome, FiLogOut, FiShoppingBag } from 'react-icons/fi';
 
 const AdminSidebar = () => {
   const location = useLocation();
@@ -43,6 +43,14 @@ const AdminSidebar = () => {
         >
           <FiPackage className="icon" size={20} />
           Orders
+        </Link>
+
+        <Link 
+          to="/admin/products" 
+          className={isActive('/admin/products') ? 'nav-item active' : 'nav-item'}
+        >
+          <FiShoppingBag className="icon" size={20} />
+          Products
         </Link>
 
         <Link to="/" className="nav-item">

@@ -100,13 +100,20 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
         
+        OrderStatus previousStatus = order.getStatus();
         order.setStatus(status);
         Order updatedOrder = orderRepository.save(order);
+        
+        // If order is being marked as DELIVERED, reduce product stock
+        if (status == OrderStatus.DELIVERED && previousStatus != OrderStatus.DELIVERED) {
+            updateProductStock(updatedOrder);
+        }
         
         // Publish appropriate event based on status
         String routingKey = switch (status) {
             case PAID -> RabbitMQConfig.ORDER_PAID_ROUTING_KEY;
             case SHIPPED -> RabbitMQConfig.ORDER_SHIPPED_ROUTING_KEY;
+            case DELIVERED -> RabbitMQConfig.ORDER_DELIVERED_ROUTING_KEY;
             default -> null;
         };
         
@@ -153,6 +160,38 @@ public class OrderService {
         
         rabbitTemplate.convertAndSend(RabbitMQConfig.ORDER_EXCHANGE, routingKey, event);
         log.info("Published order event: {} with routing key: {}", event.getOrderId(), routingKey);
+    }
+    
+    private void updateProductStock(Order order) {
+        for (OrderItem item : order.getItems()) {
+            try {
+                // Call product service to update stock
+                webClientBuilder.build()
+                        .put()
+                        .uri(productServiceUrl + "/api/products/" + item.getProductId() + "/stock")
+                        .bodyValue(java.util.Map.of("quantity", item.getQuantity()))
+                        .retrieve()
+                        .bodyToMono(java.util.Map.class)
+                        .doOnSuccess(response -> {
+                            Boolean success = (Boolean) response.get("success");
+                            if (Boolean.TRUE.equals(success)) {
+                                log.info("Successfully updated stock for product {} by {} units", 
+                                        item.getProductId(), item.getQuantity());
+                            } else {
+                                log.warn("Failed to update stock for product {}: insufficient stock", 
+                                        item.getProductId());
+                            }
+                        })
+                        .doOnError(error -> {
+                            log.error("Error updating stock for product {}: {}", 
+                                    item.getProductId(), error.getMessage());
+                        })
+                        .subscribe();
+            } catch (Exception e) {
+                log.error("Exception while updating stock for product {}: {}", 
+                        item.getProductId(), e.getMessage());
+            }
+        }
     }
     
     private OrderDTO convertToDTO(Order order) {

@@ -23,24 +23,12 @@ public class OrderEventListener {
     public void handleOrderCreated(OrderEvent event) {
         log.info("Received ORDER_CREATED event for order: {}", event.getOrderId());
         
-        String subject = "Order Created - Order #" + event.getOrderId();
-        String message = String.format(
-                "Dear %s,\n\nYour order #%d has been created successfully.\n\n" +
-                        "Order Total: $%.2f\n" +
-                        "Shipping Address: %s\n\n" +
-                        "Thank you for shopping with us!",
-                event.getCustomerName(),
-                event.getOrderId(),
-                event.getTotalAmount(),
-                event.getShippingAddress()
-        );
-        
-        notificationService.createAndSendNotification(
+        notificationService.sendOrderCreatedNotification(
                 event.getOrderId(),
                 event.getCustomerEmail(),
-                NotificationType.ORDER_CREATED,
-                subject,
-                message
+                event.getCustomerName(),
+                event.getTotalAmount(),
+                event.getShippingAddress()
         );
     }
     
@@ -48,22 +36,11 @@ public class OrderEventListener {
     public void handleOrderConfirmed(OrderEvent event) {
         log.info("Received ORDER_CONFIRMED event for order: {}", event.getOrderId());
         
-        String subject = "Order Confirmed - Order #" + event.getOrderId();
-        String message = String.format(
-                "Dear %s,\n\nYour order #%d has been confirmed.\n\n" +
-                        "We are processing your order and will notify you once it's shipped.\n\n" +
-                        "Order Total: $%.2f",
-                event.getCustomerName(),
-                event.getOrderId(),
-                event.getTotalAmount()
-        );
-        
-        notificationService.createAndSendNotification(
+        notificationService.sendOrderConfirmedNotification(
                 event.getOrderId(),
                 event.getCustomerEmail(),
-                NotificationType.ORDER_CONFIRMED,
-                subject,
-                message
+                event.getCustomerName(),
+                event.getTotalAmount()
         );
     }
     
@@ -71,24 +48,12 @@ public class OrderEventListener {
     public void handleOrderPaid(OrderEvent event) {
         log.info("Received ORDER_PAID event for order: {}", event.getOrderId());
         
-        String subject = "Payment Received - Order #" + event.getOrderId();
-        String message = String.format(
-                "Dear %s,\n\nWe have received your payment for order #%d.\n\n" +
-                        "Amount Paid: $%.2f\n" +
-                        "Payment Method: %s\n\n" +
-                        "Your order will be shipped soon!",
-                event.getCustomerName(),
-                event.getOrderId(),
-                event.getTotalAmount(),
-                event.getPaymentMethod()
-        );
-        
-        notificationService.createAndSendNotification(
+        notificationService.sendOrderPaidNotification(
                 event.getOrderId(),
                 event.getCustomerEmail(),
-                NotificationType.ORDER_PAID,
-                subject,
-                message
+                event.getCustomerName(),
+                event.getTotalAmount(),
+                event.getPaymentMethod()
         );
     }
     
@@ -96,22 +61,22 @@ public class OrderEventListener {
     public void handleOrderShipped(OrderEvent event) {
         log.info("Received ORDER_SHIPPED event for order: {}", event.getOrderId());
         
-        String subject = "Order Shipped - Order #" + event.getOrderId();
-        String message = String.format(
-                "Dear %s,\n\nGreat news! Your order #%d has been shipped.\n\n" +
-                        "Shipping Address: %s\n\n" +
-                        "Your order will arrive soon. Thank you for your patience!",
-                event.getCustomerName(),
-                event.getOrderId(),
-                event.getShippingAddress()
-        );
-        
-        notificationService.createAndSendNotification(
+        notificationService.sendOrderShippedNotification(
                 event.getOrderId(),
                 event.getCustomerEmail(),
-                NotificationType.ORDER_SHIPPED,
-                subject,
-                message
+                event.getCustomerName(),
+                event.getShippingAddress()
+        );
+    }
+    
+    @RabbitListener(queues = "order.delivered.queue")
+    public void handleOrderDelivered(OrderEvent event) {
+        log.info("Received ORDER_DELIVERED event for order: {}", event.getOrderId());
+        
+        notificationService.sendOrderDeliveredNotification(
+                event.getOrderId(),
+                event.getCustomerEmail(),
+                event.getCustomerName()
         );
     }
 }

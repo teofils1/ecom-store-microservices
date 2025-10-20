@@ -31,7 +31,7 @@ public class Notification {
     @Column(nullable = false)
     private String subject;
     
-    @Column(length = 2000, nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
     
     @Enumerated(EnumType.STRING)

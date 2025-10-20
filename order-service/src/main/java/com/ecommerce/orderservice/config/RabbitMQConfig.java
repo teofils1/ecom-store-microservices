@@ -19,11 +19,13 @@ public class RabbitMQConfig {
     public static final String ORDER_CONFIRMED_QUEUE = "order.confirmed.queue";
     public static final String ORDER_PAID_QUEUE = "order.paid.queue";
     public static final String ORDER_SHIPPED_QUEUE = "order.shipped.queue";
+    public static final String ORDER_DELIVERED_QUEUE = "order.delivered.queue";
     
     public static final String ORDER_CREATED_ROUTING_KEY = "order.created";
     public static final String ORDER_CONFIRMED_ROUTING_KEY = "order.confirmed";
     public static final String ORDER_PAID_ROUTING_KEY = "order.paid";
     public static final String ORDER_SHIPPED_ROUTING_KEY = "order.shipped";
+    public static final String ORDER_DELIVERED_ROUTING_KEY = "order.delivered";
     
     @Bean
     public TopicExchange exchange() {
@@ -48,6 +50,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue orderShippedQueue() {
         return new Queue(ORDER_SHIPPED_QUEUE, true);
+    }
+    
+    @Bean
+    public Queue orderDeliveredQueue() {
+        return new Queue(ORDER_DELIVERED_QUEUE, true);
     }
     
     @Bean
@@ -76,6 +83,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(orderShippedQueue())
                 .to(exchange())
                 .with(ORDER_SHIPPED_ROUTING_KEY);
+    }
+    
+    @Bean
+    public Binding orderDeliveredBinding() {
+        return BindingBuilder.bind(orderDeliveredQueue())
+                .to(exchange())
+                .with(ORDER_DELIVERED_ROUTING_KEY);
     }
     
     @Bean
